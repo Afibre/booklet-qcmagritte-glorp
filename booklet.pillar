@@ -1,0 +1,3 @@
+Hello booklet
+
+${inputFile:Chapters/GettingStarted.pillar}$

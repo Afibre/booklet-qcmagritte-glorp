@@ -1,0 +1,16 @@
+sudo: required
+services:
+- docker
+install: docker pull dpollet/texlive:pillar
+script: |
+  docker run --tty --rm \
+    --volume $PWD:/work \
+    dpollet/texlive:pillar \
+    bash -c "make bootstrap && make spiralbook"
+deploy:
+  provider: releases
+  api_key:
+    secure: NqrE3dOc5Yd7XCg9GSiLTW0QyKMdh+F7lH2dqwrj5qFQSjLozp/KHNz/F0g5JsqsyK7RPEzv/wkS0WxJzoxIHZoCPcQRwVdH6kamF6r3oV8ISR9JMwv29oFiicv9Xt6H/QRSMRFF94AMAFLz6ZfTIJmB1pPcsvitp2EOlaBq9vY9W3uUymx0vVCGSBU5ke+i3iEPuzrCUtLI0RARWs2LBXqfDWJLgGWzyagASxwFmjs0oycaN+kD0/oWMQfbN/EdP7jRjPpeq7a/mBpw8aOOWi42m3RWNFgaXIrZUnwt/g8q92lMD07Nyi7MFQwfo+8r+Nuald7Uws/6MEX1FOuNbEqosBgenI3DnIhlItL5YYhfVtyplfhoP3mcKCW1OYk41L2CpdNGuNOoLR7EXz/VDSzGx6cuOoDbKnaGpymg8PErVH1lrobuMEU2Whf9rq3phLlgyiy8Zuh0hkLrkYdrzmbZMXqnekWbC42VS4/Nda4CSeeiTk9i8/gNmNUxaiqSOqLbc7IcIKTNqmKZ4ruLI73O7pzjyweJa7bTBNof/n4UlJ7LpEPxb9QktBj/dKgQQbbNLnuUIaEb2C8yQoxuJjB6wSJdyJKHhnURApQY2fUdp0Mbc6IsydzXDBkU4KFbNBpI/ev4/5SC14ZGjtQd/SW0THQycCphREwuafmhLfw=
+  file: booklet-qcmagritte-glorp.pdf
+  on:
+    repo: lolgzs/booklet-qcmagritte-glorp
