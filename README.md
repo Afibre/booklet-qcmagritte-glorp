@@ -2,5 +2,5 @@
 
 [![Build status][badge]][travis]
 
-[travis]: https://travis-ci.org/lolgzs/booklet-qcmagritte-glorp
-[badge]: https://travis-ci.org/lolgzs/booklet-qcmagritte-glorp.svg?branch=master
+[travis]: https://travis-ci.org/Afibre/booklet-qcmagritte-glorp
+[badge]: https://travis-ci.org/Afibre/booklet-qcmagritte-glorp.svg?branch=master
