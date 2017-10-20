@@ -1,12 +1,17 @@
 sudo: required
+
 services:
 - docker
-install: docker pull dpollet/texlive:pillar
+
+before_install:
+- docker pull dpollet/texlive:pillar
+
 script: |
   docker run --tty --rm \
     --volume $PWD:/work \
     dpollet/texlive:pillar \
     bash -c "make bootstrap && make spiralbook"
+    
 deploy:
   provider: releases
   api_key:
@@ -14,3 +19,5 @@ deploy:
   file: build/booklet.spiral.pdf
   on:
     repo: lolgzs/booklet-qcmagritte-glorp
+    tags: true
+    all_branches: true
