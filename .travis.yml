@@ -19,5 +19,4 @@ deploy:
   file: build/booklet.spiral.pdf
   on:
     repo: lolgzs/booklet-qcmagritte-glorp
-    tags: true
     all_branches: true
