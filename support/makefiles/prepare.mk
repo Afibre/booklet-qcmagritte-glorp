@@ -28,6 +28,7 @@ $(OUTPUTDIRECTORY):
 	mkdir -p $(OUTPUTDIRECTORY)
 
 $(OUTPUTDIRECTORY)/support: $(OUTPUTDIRECTORY)
+	cp afibre.bib $(OUTPUTDIRECTORY)
 	ln -fs ../support $(OUTPUTDIRECTORY)
 
 # extract versioning info for LaTeX

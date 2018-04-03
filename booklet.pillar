@@ -1,3 +1,11 @@
 Hello booklet
 
+we had a look at ${cite:ORPG71}$ and it looked good
+
 ${inputFile:Chapters/GettingStarted.pillar}$
+
+
+{{{latex:
+\bibliographystyle{abbrv}
+\bibliography{afibre}
+}}}
