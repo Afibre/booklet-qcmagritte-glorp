@@ -11,7 +11,9 @@ This booklet try to bring insight into aggregating dynamic tools that helps deal
 - QCMagritte${cite:QCMAGR}$ provides reusable components for developping responsive web applications based on Seaside and Magritte.
 - GLORP${cite:GLORP17}$ allows to persist objects into relational databases like MySQL
 
+
 ${inputFile:Chapters/GettingStarted.pillar}$
+
 
 {{{latex:
 \bibliographystyle{abbrv}
