@@ -1,0 +1,16 @@
+!!Introducing Goombas
+
+Setting up QCMagritte and Seaside is tedious. We also want easy database configuration. You may also need to have access to several databases from a Pharo image.
+
+The Goombas project aims at providing a web application framework with QCMagritte and Glorp persistence. It also includes a wizard that will generate core classes to get started with.
+
+The project is hosted at *https://github.com/Afibre/Goombas*.
+
+Installation from a fresh Pharo image:
+
+[[[
+Metacello new 
+  githubUser: 'Afibre' project: 'Goombas' commitish: 'master' path: 'src'; 
+  baseline: 'Goombas';
+  load. 
+]]]

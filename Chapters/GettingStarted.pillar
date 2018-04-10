@@ -1,3 +1,25 @@
 !!Getting started
 
-Download pharo
+For this booklet we rely on Pharo 6.1. Once up and running, you can install
+QCMagritte and all its dependencies (including Seaside, Magritte and Bootstrap)
+with Metacello:
+
+[[[
+Metacello new 
+  githubUser: 'Afibre' project: 'QCMagritte' commitish: 'master' path: 'src'; 
+  baseline: 'QCMagritte';
+  load.
+]]]
+
+
+Note that pre-built 64 bits images are available
+at *https://github.com/Afibre/QCMagritte/releases*.
+
+Start the Zinc web server on port ==8080==:
+
+[[[
+ZnZincServerAdaptor startOn: 8080
+]]]
+
+
+Then point your browser to *http://localhost:8080/*.
