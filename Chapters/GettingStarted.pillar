@@ -65,7 +65,7 @@ as shown in screenshot *@ToDoApplication*.
 
 
 
-!!! Models definition
+!!! Model definition
 
 QCMagritte applications are model driven. That means we will put some effort in
 describing models handled by the application. Then we expect QCMagritte to
@@ -90,6 +90,9 @@ Then we link this model to our application by overriding
 ToDoApplication>>model
   ^TodoListModel default
 ]]]
+
+
+!!!! ToDo items
 
 For ToDoApplication, we need some ==ToDo items== that have a ==title==, a ==description==
 and a ==completion== status. Let's declare this class as a subclass of ==QCObject==:
@@ -158,3 +161,44 @@ TodoItem>>descriptionCompleted
       priority: 300;
       yourself
 ]]]
+
+
+!!!! Putting all together
+
+Finally, we need a way to store created Todo items. We will talk about Glorp
+persistence in the next chapter. For now, let's use an
+==OrderedCollection==. Add instance variable ==todoItems== in ==TodoListModel==
+as follow:
+
+[[[
+QCBootstrapApplicationModel subclass: #TodoListModel
+  instanceVariableNames: 'todoItems'
+  classVariableNames: ''
+  category: 'Tutorial-Model'
+
+
+TodoListModel>>todoItems
+  ^todoItems ifNil: [ todoItems := OrderedCollection new ]
+
+TodoListModel>>todoItems: aCollection
+  todoItems := aCollection
+]]]
+
+Then describe this variable using Magritte description
+==MAToMaManyRelationDescription==:
+
+[[[
+TodoListModel>>descriptionTodoItems
+  <magritteDescription>
+  ^MAToManyRelationDescription new
+    label: 'Todo';
+    accessor: #todoItems;
+    priority: 200;
+    classes: { TodoItem };
+    yourself
+]]]
+
+Go back to your web browser, you should be able to create / update / delete some
+items (see *@ToDoWithModel*)
+
++ToDo application front page>file://figures/qcmagritte_todo_with_model.png|width=70|label=ToDoWithModel+
