@@ -1,5 +1,7 @@
 !!Getting started
 
+!!! Installation
+
 For this booklet we rely on Pharo 6.1. Once up and running, you can install
 QCMagritte and all its dependencies (including Seaside, Magritte and Bootstrap)
 with Metacello:
@@ -21,5 +23,42 @@ Start the Zinc web server on port ==8080==:
 ZnZincServerAdaptor startOn: 8080
 ]]]
 
+Then point your browser to *http://localhost:8080/*. It should display the
+QCMagritte tutorial as in picture *@QCMagritteTutorial*
 
-Then point your browser to *http://localhost:8080/*.
++The QCMagritte tutorial>file://figures/qcmagritte_tutorial.png|width=70|label=QCMagritteTutorial+
+
+
+!!! The ToDo application
+
+We provide a summary to get started below.
+
+The creation of a QCMagritte application requires to subclass QCBootstrapApplication:
+
+[[[
+QCBootstrapApplication subclass: #ToDoApplication
+  instanceVariableNames: ''
+  classVariableNames: ''
+  category: 'ToDo-Web'
+]]]
+
+
+then to register it in Seaside:
+
+[[[
+ToDoApplication registerForDevelopmentAt: 'ToDo'.
+]]]
+
+QCBootstrapApplication requires to define ==#title== that answers the title of
+the application:
+
+[[[
+ToDoApplication>>title
+  ^ 'What to do ?'
+]]]
+
++ToDo application>file://figures/qcmagritte_todo.png|width=70|label=ToDoApplication+
+
+Now the page at *http://localhost:8080/ToDo* should display the ToDo application
+as shown in screenshot *@ToDoApplication*.
+
