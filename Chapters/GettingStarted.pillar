@@ -31,9 +31,10 @@ QCMagritte tutorial as in picture *@QCMagritteTutorial*
 
 !!! The ToDo application
 
-We provide a summary to get started below.
+We provide a summary of the QCMagritte tutorial below. We will focus here on the
+minimum to go to the next chapter.
 
-The creation of a QCMagritte application requires to subclass QCBootstrapApplication:
+The creation of a QCMagritte application requires to subclass ==QCBootstrapApplication==:
 
 [[[
 QCBootstrapApplication subclass: #ToDoApplication
@@ -62,3 +63,98 @@ ToDoApplication>>title
 Now the page at *http://localhost:8080/ToDo* should display the ToDo application
 as shown in screenshot *@ToDoApplication*.
 
+
+
+!!! Models definition
+
+QCMagritte applications are model driven. That means we will put some effort in
+describing models handled by the application. Then we expect QCMagritte to
+generate a nice web interface to administrate these models.
+
+In a QCBootstrapApplication subclass we have to declare the entry point, the model
+that acts as the root of all objects, datas that will be manipulated through the
+web interface. Here the model will be an instance of a
+==QCBootstrapApplicationModel== subclass:
+
+[[[
+QCBootstrapApplicationModel subclass: #TodoListModel
+  instanceVariableNames: ''
+  classVariableNames: ''
+  category: 'ToDo-Model'
+]]]
+
+Then we link this model to our application by overriding
+==ToDoApplication>>model==:
+
+[[[
+ToDoApplication>>model
+  ^TodoListModel default
+]]]
+
+For ToDoApplication, we need some ==ToDo items== that have a ==title==, a ==description==
+and a ==completion== status. Let's declare this class as a subclass of ==QCObject==:
+
+[[[
+QCObject subclass: #TodoItem
+  instanceVariableNames: 'title description completed'
+  classVariableNames:''
+  category:'ToDo-Model'
+
+TodoItem>>title
+	^title
+
+TodoItem>>description
+	^description
+
+TodoItem>>completed
+	^completed ifNil: [ false ]
+  
+TodoItem>>title: aString
+	title := aString
+
+TodoItem>>description: aString
+	^description := aString
+
+TodoItem>>completed: aBoolean
+	completed := aBoolean
+]]]
+
+
+Now we can describe properly or ToDo items variables using Magritte. First,
+==title== is a required string:
+
+[[[
+TodoItem>>descriptionTitle
+  <magritteDescription>
+  ^MAStringDescription new
+      accessor: #title;
+      label: 'Title';
+      priority: 100;
+      beRequired;
+      yourself
+]]]
+
+
+Then comes ==description== as a long string:
+
+[[[
+TodoItem>>descriptionDescription
+	<magritteDescription>
+	^MAMemoDescription new
+      accessor: #description;
+      label: 'Description';
+      priority: 200;
+      yourself
+]]]
+
+Finally there's the completion status as a boolean:
+
+[[[
+TodoItem>>descriptionCompleted
+  <magritteDescription>
+  ^MABooleanDescription new
+      accessor: #completed;
+      label: 'Completed';
+      priority: 300;
+      yourself
+]]]
