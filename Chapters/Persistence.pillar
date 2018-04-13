@@ -1,1 +1,67 @@
 !!Persistence with GLORP
+
+GLORP is an ORM. See ${cite:GLORP17}$ for a full documentation on the
+subject. Here we will focus on what's needed for our ToDo
+application.
+
+First make sure you have a MariaDB or MySQL server set up and running.
+
+Next we will need to install GLORP and database drivers. ==Garage==
+provides a common API for different driver implementations. Finally
+==GarageGlorp== contains what's needed to bind GLORP and Garage
+together.
+
+[[[
+Metacello new
+  repository: 'github://pharo-rdbms/glorp';
+  baseline: 'Glorp';
+  load.
+
+Metacello new
+  repository: 'github://pharo-rdbms/garage';
+  baseline: 'Garage';
+  load.
+
+Metacello new
+  repository: 'github://pharo-rdbms/glorp-garage';
+  baseline: 'GarageGlorp';
+  load.
+]]]
+
+Then we need to register Garage as default driver for GLORP:
+
+[[[
+GAGlorpDriver beGlorpDefaultDriver.
+]]]
+
+
+!!! Database login
+
+First create a new MySQL database. We will assume that your database
+server is installed locally and that root access password is root.
+
+[[[
+mysql -uroot -proot -e "create database todos"
+]]]
+
+Then check that Pharo can connect to this database:
+
+[[[
+login := Login new
+  database: MySQLPlatform new;
+  username: 'root';
+  password: 'root';
+  host: 'localhost';
+  port: '3306';
+  databaseName: 'todos';
+  encodingStrategy: #utf8.
+
+accessor := DatabaseAccessor forLogin: login.
+accessor login.
+
+accessor isLoggedIn
+>>> true
+]]]
+
+
+!!! Mapping
