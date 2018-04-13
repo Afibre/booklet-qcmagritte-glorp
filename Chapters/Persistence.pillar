@@ -48,7 +48,7 @@ Then check that Pharo can connect to this database:
 
 [[[
 login := Login new
-  database: MySQLPlatform new;
+  database: MySQLPlatform new beMyISAM;
   username: 'root';
   password: 'root';
   host: 'localhost';
@@ -65,3 +65,168 @@ accessor isLoggedIn
 
 
 !!! Mapping
+
+For a given application, a way is to describe all tables and mappings
+into a subclass of ==DescriptorSystem==:
+
+[[[
+DescriptorSystem subclass: #TodoDescriptorSystem
+  instanceVariableNames: ''
+  classVariableNames: ''
+  category: 'ToDo-Glorp'
+]]]
+
+
+With DescriptorSystem we need to describe the following:
+- all table names
+- the fields for each table
+- each class attributes that will be handled
+- how to map class attributes to table fields
+
+Let's start with table names. We will have only one table to store
+==ToDoItem== instances. GLORP requires to define method
+==allTableNames== that returns the collection of table names:
+
+[[[
+TodoDescriptorSystem >> allTableNames
+  ^ #('ITEMS')
+]]]
+
+
+An item will have the fields ==id== (primary key), ==title==
+(varchar), ==description== (text) and ==completed== (boolean). For
+describing  a table, GLORP will look for methods named ==tableForTABLENAME==:
+
+[[[
+TodoDescriptorSystem >> tableForITEMS: aTable
+  (aTable
+     createFieldNamed: 'id'
+     type: platform serial) bePrimaryKey.
+
+  aTable
+    createFieldNamed: 'title' type: (platform varchar: 250);
+    createFieldNamed: 'description' type: platform text;
+    createFieldNamed: 'completed' type: platform boolean.
+]]]
+
+Next we declare the corresponding fields of ==TodoItem== class. GLORP
+will look for methods named ==classModelForYourClass==: 
+
+[[[
+TodoDescriptorSystem >> classModelForTodoItem: aClassModel
+  #( id title description completed ) do: [ :each |
+      aClassModel newAttributeNamed: each ]
+]]]
+
+Note that we add an attribute named ==id== that ==TodoItem== should
+store in order to handle persistency correctly. So we need to adapt
+==TodoItem== definition by adding instance variable ==id==:
+
+[[[
+QCObject subclass: #TodoItem
+  instanceVariableNames: 'id title description completed'
+  classVariableNames:''
+  category:'ToDo-Model'
+]]]
+
+
+Finally we map the table description and the class model
+together. This example is really simple, we will map each class
+attribute to the corresponding table field. That's a
+==DirectMapping==. GLORP will look for methods named
+==descriptorForYourClass==:
+
+[[[
+TodoDescriptorSystem >> descriptorForTodoItem: aDescriptor
+  aDescriptor table: (self tableNamed: 'ITEMS').
+
+  #(id title description completed) do: [:each|
+    aDescriptor directMappingFor: each.
+  ]
+]]]
+
+
+!!! Session
+
+GLORP tracks persistency into a database session. We will add some
+utility code to create a new session where we can create, update and
+delete objects. Let's name this class ==TodoDatabase==:
+
+[[[
+Object subclass: #TodoDatabase
+    instanceVariableNames: ''
+    classVariableNames: ''
+    package: 'ToDo-Glorp'
+]]]
+
+
+Then on class side we add the code needed to log into the database:
+
+[[[
+TodoDatabase class >> login
+  ^ Login new
+      database: MySQLPlatform new;
+      username: 'root';
+      password: 'root';
+      host: 'localhost';
+      port: '3306';
+      databaseName: 'todos';
+      encodingStrategy: #utf8.
+]]]
+
+
+And a method to create a new session:
+
+[[[
+TodoDatabase class >> session
+  ^ TodoDescriptorSystem sessionForLogin: self login
+]]]
+
+
+!!! Creating tables
+
+Now some magic. As you have described the database schema with GLORP,
+you can tell it to create the tables. In a playground evaluate:
+
+[[[
+TodoDatabase session
+ login;
+ createTables.
+]]]
+
+
+In MariaDB / MySQL:
+
+[[[
+desc ITEMS;
++------------+-------------+------+-----+---------+----------------+
+|Field       | Type        | Null | Key | Default | Extra          |
++------------+-------------+------+-----+---------+----------------+
+|id          | int(11)     | NO   | PRI | NULL    | auto_increment |
+|title       | varchar(250)| YES  |     | NULL    |                |
+|description | longtext    | YES  |     | NULL    |                |
+|completed   | smallint(6) | YES  |     | NULL    |                |
++------------+-------------+------+-----+---------+----------------+
+]]]
+
+
+!!! Manipulating objects
+
+
+Let's go further. We can create a new ==TodoItem== in a MySQL
+transaction:
+
+[[[
+session := TodoDatabase session.
+session login.
+session inUnitOfWorkDo: [
+  session
+    register: (TodoItem new
+                 title: 'add GLORP persistence';
+                 description: 'we need to describe mappings';
+                 completed: true);
+    register: (TodoItem new
+                 title: 'Glue persistence and QCMagritte';
+                 completed: false)
+]
+]]]

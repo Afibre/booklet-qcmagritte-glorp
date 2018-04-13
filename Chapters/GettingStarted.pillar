@@ -54,7 +54,7 @@ QCBootstrapApplication requires to define ==#title== that answers the title of
 the application:
 
 [[[
-ToDoApplication>>title
+ToDoApplication >> title
   ^ 'What to do ?'
 ]]]
 
@@ -84,10 +84,10 @@ QCBootstrapApplicationModel subclass: #TodoListModel
 ]]]
 
 Then we link this model to our application by overriding
-==ToDoApplication>>model==:
+==ToDoApplication >> model==:
 
 [[[
-ToDoApplication>>model
+ToDoApplication >> model
   ^TodoListModel default
 ]]]
 
@@ -103,22 +103,22 @@ QCObject subclass: #TodoItem
   classVariableNames:''
   category:'ToDo-Model'
 
-TodoItem>>title
+TodoItem >> title
 	^title
 
-TodoItem>>description
+TodoItem >> description
 	^description
 
-TodoItem>>completed
+TodoItem >> completed
 	^completed ifNil: [ false ]
   
-TodoItem>>title: aString
+TodoItem >> title: aString
 	title := aString
 
-TodoItem>>description: aString
+TodoItem >> description: aString
 	^description := aString
 
-TodoItem>>completed: aBoolean
+TodoItem >> completed: aBoolean
 	completed := aBoolean
 ]]]
 
@@ -127,7 +127,7 @@ Now we can describe properly or ToDo items variables using Magritte. First,
 ==title== is a required string:
 
 [[[
-TodoItem>>descriptionTitle
+TodoItem >> descriptionTitle
   <magritteDescription>
   ^MAStringDescription new
       accessor: #title;
@@ -141,7 +141,7 @@ TodoItem>>descriptionTitle
 Then comes ==description== as a long string:
 
 [[[
-TodoItem>>descriptionDescription
+TodoItem >> descriptionDescription
 	<magritteDescription>
 	^MAMemoDescription new
       accessor: #description;
@@ -153,7 +153,7 @@ TodoItem>>descriptionDescription
 Finally there's the completion status as a boolean:
 
 [[[
-TodoItem>>descriptionCompleted
+TodoItem >> descriptionCompleted
   <magritteDescription>
   ^MABooleanDescription new
       accessor: #completed;
@@ -177,10 +177,10 @@ QCBootstrapApplicationModel subclass: #TodoListModel
   category: 'Tutorial-Model'
 
 
-TodoListModel>>todoItems
+TodoListModel >> todoItems
   ^todoItems ifNil: [ todoItems := OrderedCollection new ]
 
-TodoListModel>>todoItems: aCollection
+TodoListModel >> todoItems: aCollection
   todoItems := aCollection
 ]]]
 
@@ -188,7 +188,7 @@ Then describe this variable using Magritte description
 ==MAToMaManyRelationDescription==:
 
 [[[
-TodoListModel>>descriptionTodoItems
+TodoListModel >> descriptionTodoItems
   <magritteDescription>
   ^MAToManyRelationDescription new
     label: 'Todo';
