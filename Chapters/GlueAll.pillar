@@ -43,7 +43,7 @@ ToDoApplication registerForDevelopmentAt: 'ToDo'.
 
 You can check ==ToDoSession== is used by opening the web page *http://localhost:8080/config/ToDo* and have a look at the ==Session class== parameter as shown in  *@ToDoSession*.
 
-+ToDo application>file://figures/todosession.png|width=70|label=ToDoSession+
++Session configuration>file://figures/todosession.png|width=70|label=ToDoSession+
 
 
 !!! GLORP sessions
@@ -86,7 +86,7 @@ ToDoListModel >> todoItems
 
 Now refresh your browser on *http://localhost:8080/ToDo*. It should look like capture  *@GlorpTodo*.
 
-+ToDo application>file://figures/glorp_todo.png|width=70|label=GlorpTodo+
++ToDo items fetched from GLORP>file://figures/glorp_todo.png|width=70|label=GlorpTodo+
 
 
 !!! Adding and removing ToDo items

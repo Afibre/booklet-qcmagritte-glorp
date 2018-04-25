@@ -1,6 +1,6 @@
 !!Introducing Goombas
 
-Setting up QCMagritte and Seaside is tedious. We also want easy database configuration. You may also need to have access to several databases from a Pharo image.
+As you have seen, setting up QCMagritte, Seaside and GLORP can be tedious. We also want easy database configuration. You may also need to have access to several databases from a Pharo image.
 
 The Goombas project aims at providing a web application framework with QCMagritte and Glorp persistence. It also includes a wizard that will generate core classes to get started with.
 
@@ -14,3 +14,134 @@ Metacello new
   baseline: 'Goombas';
   load. 
 ]]]
+
+
+Then you can generate a new Goombas application:
+
+[[[
+GBApplicationGenerator build
+]]]
+
+As seen in *@GoombasBuild*, Goombas will ask for class prefix. As we will recreate the ==ToDo== application, enter ==ToDo==
+
++Goombas application generator>file://figures/goombas_build.png|width=70|label=GoombasBuild+
+
+Then you have to enter a package name, let's name it ==ToDo==. Finally, the application generator opens a system browser on the ==ToDo== package and a settings browser on the database access configuration (see *@GoombasBrowsers*). Here you can setup the database connection as in chapter 2:
+- database name: ==todos==
+- username: ==root==
+- password: the root password
+
+
++Goombas browsers>file://figures/goombas_build.png|width=70|label=GoombasBrowsers+
+
+
+Goombas also register automatically the application in Seaside. So the page *http://localhost:8080/ToDo* should be available.
+
+
+!!!Implementation
+
+So now we have to implement ==ToDoItem== and it's nearly the same as first chapter. But instead of subclassing ==QCObject==, you need to subclass Goombas ==GBObject==:
+
+[[[
+GBObject subclass: #ToDoItem
+  instanceVariableNames: 'id title description completed'
+  classVariableNames:''
+  category:'ToDo-Core'
+]]]
+
+You can use refactoring tools to generate accessors, then add Magritte descriptions:
+
+[[[
+ToDoItem >> descriptionTitle
+  <magritteDescription>
+  ^MAStringDescription new
+      accessor: #title;
+      label: 'Title';
+      priority: 100;
+      beRequired;
+      yourself
+
+
+ToDoItem >> descriptionDescription
+	<magritteDescription>
+	^MAMemoDescription new
+      accessor: #description;
+      label: 'Description';
+      priority: 200;
+      yourself
+
+ToDoItem >> descriptionCompleted
+  <magritteDescription>
+  ^MABooleanDescription new
+      accessor: #completed;
+      label: 'Completed';
+      priority: 300;
+      yourself
+]]]
+
+Then we have to describe GLORP persistence. The class ==ToDoDescriptorSystem== has already been created by Goombas, so add only needed methods:
+
+[[[
+ToDoDescriptorSystem >> allTableNames
+  ^ #('ITEMS')
+
+
+ToDoDescriptorSystem >> tableForITEMS: aTable
+  (aTable
+     createFieldNamed: 'id'
+     type: platform serial) bePrimaryKey.
+
+  aTable
+    createFieldNamed: 'title' type: (platform varchar: 250);
+    createFieldNamed: 'description' type: platform text;
+    createFieldNamed: 'completed' type: platform boolean.
+
+
+ToDoDescriptorSystem >> classModelForToDoItem: aClassModel
+  #( id title description completed ) do: [ :each |
+      aClassModel newAttributeNamed: each ]
+
+
+ToDoDescriptorSystem >> descriptorForToDoItem: aDescriptor
+  aDescriptor table: (self tableNamed: 'ITEMS').
+
+  #(id title description completed) do: [:each|
+    aDescriptor directMappingFor: each.
+  ]
+]]]
+
+
+Finally, we had to add needed methods to ==ToDoModel== to handle the todo items:
+
+[[[
+ToDoModel >> descriptionToDoItems
+  <magritteDescription>
+  ^MAToManyRelationDescription new
+    label: 'Todo';
+    accessor: #todoItems;
+    priority: 200;
+    classes: { ToDoItem };
+    yourself
+
+
+ToDoListModel >> todoItems
+  | query |
+  query := (Query read: ToDoItem) shouldRefresh: true.
+  ^ self database execute: query
+
+
+ToDoListModel >> todoItems: aCollection
+  self session database inUnitOfWorkDo: [:session| |itemsInDb|
+    itemsInDb := self todoItems.
+    
+    itemsInDb do: [:each | 
+	  (aCollection includes: each) ifFalse: [session delete: each].
+    ].
+
+    aCollection do: [ :each | 
+      (itemsInDb includes: each) ifFalse: [session register: each ] 
+	]
+  ].
+]]]
+
+And all is done.
