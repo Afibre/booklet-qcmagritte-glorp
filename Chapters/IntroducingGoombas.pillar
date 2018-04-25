@@ -32,7 +32,7 @@ Then you have to enter a package name, let's name it ==ToDo==. Finally, the appl
 - password: the root password
 
 
-+Goombas browsers>file://figures/goombas_build.png|width=70|label=GoombasBrowsers+
++Goombas browsers>file://figures/goombas_todo.png|width=70|label=GoombasBrowsers+
 
 
 Goombas also register automatically the application in Seaside. So the page *http://localhost:8080/ToDo* should be available.
