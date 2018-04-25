@@ -77,7 +77,7 @@ web interface. Here the model will be an instance of a
 ==QCBootstrapApplicationModel== subclass:
 
 [[[
-QCBootstrapApplicationModel subclass: #TodoListModel
+QCBootstrapApplicationModel subclass: #ToDoListModel
   instanceVariableNames: ''
   classVariableNames: ''
   category: 'ToDo-Model'
@@ -88,7 +88,7 @@ Then we link this model to our application by overriding
 
 [[[
 ToDoApplication >> model
-  ^TodoListModel default
+  ^ToDoListModel default
 ]]]
 
 
@@ -98,27 +98,27 @@ For ToDoApplication, we need some ==ToDo items== that have a ==title==, a ==desc
 and a ==completion== status. Let's declare this class as a subclass of ==QCObject==:
 
 [[[
-QCObject subclass: #TodoItem
+QCObject subclass: #ToDoItem
   instanceVariableNames: 'title description completed'
   classVariableNames:''
   category:'ToDo-Model'
 
-TodoItem >> title
+ToDoItem >> title
 	^title
 
-TodoItem >> description
+ToDoItem >> description
 	^description
 
-TodoItem >> completed
+ToDoItem >> completed
 	^completed ifNil: [ false ]
   
-TodoItem >> title: aString
+ToDoItem >> title: aString
 	title := aString
 
-TodoItem >> description: aString
+ToDoItem >> description: aString
 	^description := aString
 
-TodoItem >> completed: aBoolean
+ToDoItem >> completed: aBoolean
 	completed := aBoolean
 ]]]
 
@@ -127,7 +127,7 @@ Now we can describe properly or ToDo items variables using Magritte. First,
 ==title== is a required string:
 
 [[[
-TodoItem >> descriptionTitle
+ToDoItem >> descriptionTitle
   <magritteDescription>
   ^MAStringDescription new
       accessor: #title;
@@ -141,7 +141,7 @@ TodoItem >> descriptionTitle
 Then comes ==description== as a long string:
 
 [[[
-TodoItem >> descriptionDescription
+ToDoItem >> descriptionDescription
 	<magritteDescription>
 	^MAMemoDescription new
       accessor: #description;
@@ -153,7 +153,7 @@ TodoItem >> descriptionDescription
 Finally there's the completion status as a boolean:
 
 [[[
-TodoItem >> descriptionCompleted
+ToDoItem >> descriptionCompleted
   <magritteDescription>
   ^MABooleanDescription new
       accessor: #completed;
@@ -167,20 +167,20 @@ TodoItem >> descriptionCompleted
 
 Finally, we need a way to store created Todo items. We will talk about Glorp
 persistence in the next chapter. For now, let's use an
-==OrderedCollection==. Add instance variable ==todoItems== in ==TodoListModel==
+==OrderedCollection==. Add instance variable ==todoItems== in ==ToDoListModel==
 as follow:
 
 [[[
-QCBootstrapApplicationModel subclass: #TodoListModel
+QCBootstrapApplicationModel subclass: #ToDoListModel
   instanceVariableNames: 'todoItems'
   classVariableNames: ''
   category: 'Tutorial-Model'
 
 
-TodoListModel >> todoItems
+ToDoListModel >> todoItems
   ^todoItems ifNil: [ todoItems := OrderedCollection new ]
 
-TodoListModel >> todoItems: aCollection
+ToDoListModel >> todoItems: aCollection
   todoItems := aCollection
 ]]]
 
@@ -188,13 +188,13 @@ Then describe this variable using Magritte description
 ==MAToMaManyRelationDescription==:
 
 [[[
-TodoListModel >> descriptionTodoItems
+ToDoListModel >> descriptionToDoItems
   <magritteDescription>
   ^MAToManyRelationDescription new
     label: 'Todo';
     accessor: #todoItems;
     priority: 200;
-    classes: { TodoItem };
+    classes: { ToDoItem };
     yourself
 ]]]
 

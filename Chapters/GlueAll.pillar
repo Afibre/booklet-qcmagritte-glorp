@@ -1,3 +1,89 @@
 !!Plug Seaside, Magritte and GLORP
 
+Now we have a QCMagritte application on one side and a persistence layer on the other side. We need to plug things together in order to have a full stack.
 
+As seen in previous chapter, we need to open a GLORP session to load and save objects. Several ways exists in a web stack to handle persistence sessions creation / deletion: one global session, one persistence session per web session, a session pool.
+
+One global session is easiest, but have several performance and security drawbacks.
+
+A session pool may be necessary to handle lot of parallelized web sessions. The complexity may be high.
+
+One persistence session per web session will be the choosen way for this booklet. The core mechanisms involved will also be a base if you need to go for a pool model.
+
+
+!!! Seaside sessions
+
+On a Seaside application you can specify a WASession (or subclass) class that will be instancianted when a user accesses an application for the first time.
+
+We can override the method ==sessionClass== in our ==ToDoApplication== to answer a custom session class that will handle a persistence session.
+
+So first, let's create our custom session class as a subclass of ==QCSession==. Note the instance variable ==databaseSession== that will be use to handle the GLORP session.
+
+[[[
+QCSession subclass: #ToDoSession
+	instanceVariableNames: 'databaseSession'
+	classVariableNames: ''
+	package: 'ToDo-Web'
+]]]
+
+
+Then define ==sessionClass== on the class side of ==ToDoApplication==:
+
+[[[
+ToDoApplication class >> sessionClass
+  ^ ToDoSession
+]]]
+
+
+To reflect the change, we need to register the application again:
+
+[[[
+ToDoApplication registerForDevelopmentAt: 'ToDo'.
+]]]
+
+You can check ==ToDoSession== is used by opening the web page *http://localhost:8080/config/ToDo* and have a look at the ==Session class== parameter as shown in  *@ToDoSession*.
+
++ToDo application>file://figures/todosession.png|width=70|label=ToDoSession+
+
+
+!!! GLORP sessions
+
+Now that we have a session class, we can add some custom behaviour. This session object can be accessed by every ==QCObject== subclass. That means ==ToDoListModel== will be able to load items from GLORP through the session object.
+
+So on the session object we add a ==database== accessor that will create the GLORP session if it does not exists:
+
+[[[
+ToDoSession >> database
+	^ databaseSession ifNil: [ databaseSession := self createDatabaseSession ]
+
+
+ToDoSession >> createDatabaseSession
+  ^ ToDoDatabase session
+       login;
+       yourself
+]]]
+
+
+When the session is unregistered by Seaside, it should also close the GLORP session. So we override the medthod ==unregistered== in ==ToDoSession==:
+
+[[[
+ToDoSession >> unregistered
+	super unregistered.
+	self database logout; close.
+	databaseSession := nil.
+]]]
+
+
+Make sure you still have the items in the ==todos== database as seen in previous chapter. We will now instruct ==ToDoListModel== to load items from the database instead of an ordered collection. So update ==ToDoListModel >> todoItems== as follows:
+
+[[[
+ToDoListModel >> todoItems
+  | query |
+  query := (Query read: ToDoItem) shouldRefresh: true.
+  ^ self database execute: query
+]]]
+
+
+Now refresh your browser on *http://localhost:8080/ToDo*. It should look like capture  *@GlorpTodo*.
+
++ToDo application>file://figures/glorp_todo.png|width=70|label=GlorpTodo+

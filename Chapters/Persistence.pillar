@@ -70,7 +70,7 @@ For a given application, a way is to describe all tables and mappings
 into a subclass of ==DescriptorSystem==:
 
 [[[
-DescriptorSystem subclass: #TodoDescriptorSystem
+DescriptorSystem subclass: #ToDoDescriptorSystem
   instanceVariableNames: ''
   classVariableNames: ''
   category: 'ToDo-Glorp'
@@ -88,7 +88,7 @@ Let's start with table names. We will have only one table to store
 ==allTableNames== that returns the collection of table names:
 
 [[[
-TodoDescriptorSystem >> allTableNames
+ToDoDescriptorSystem >> allTableNames
   ^ #('ITEMS')
 ]]]
 
@@ -98,7 +98,7 @@ An item will have the fields ==id== (primary key), ==title==
 describing  a table, GLORP will look for methods named ==tableForTABLENAME==:
 
 [[[
-TodoDescriptorSystem >> tableForITEMS: aTable
+ToDoDescriptorSystem >> tableForITEMS: aTable
   (aTable
      createFieldNamed: 'id'
      type: platform serial) bePrimaryKey.
@@ -109,21 +109,21 @@ TodoDescriptorSystem >> tableForITEMS: aTable
     createFieldNamed: 'completed' type: platform boolean.
 ]]]
 
-Next we declare the corresponding fields of ==TodoItem== class. GLORP
+Next we declare the corresponding fields of ==ToDoItem== class. GLORP
 will look for methods named ==classModelForYourClass==: 
 
 [[[
-TodoDescriptorSystem >> classModelForTodoItem: aClassModel
+ToDoDescriptorSystem >> classModelForToDoItem: aClassModel
   #( id title description completed ) do: [ :each |
       aClassModel newAttributeNamed: each ]
 ]]]
 
-Note that we add an attribute named ==id== that ==TodoItem== should
+Note that we add an attribute named ==id== that ==ToDoItem== should
 store in order to handle persistency correctly. So we need to adapt
-==TodoItem== definition by adding instance variable ==id==:
+==ToDoItem== definition by adding instance variable ==id==:
 
 [[[
-QCObject subclass: #TodoItem
+QCObject subclass: #ToDoItem
   instanceVariableNames: 'id title description completed'
   classVariableNames:''
   category:'ToDo-Model'
@@ -137,7 +137,7 @@ attribute to the corresponding table field. That's a
 ==descriptorForYourClass==:
 
 [[[
-TodoDescriptorSystem >> descriptorForTodoItem: aDescriptor
+ToDoDescriptorSystem >> descriptorForToDoItem: aDescriptor
   aDescriptor table: (self tableNamed: 'ITEMS').
 
   #(id title description completed) do: [:each|
@@ -150,10 +150,10 @@ TodoDescriptorSystem >> descriptorForTodoItem: aDescriptor
 
 GLORP tracks persistency into a database session. We will add some
 utility code to create a new session where we can create, update and
-delete objects. Let's name this class ==TodoDatabase==:
+delete objects. Let's name this class ==ToDoDatabase==:
 
 [[[
-Object subclass: #TodoDatabase
+Object subclass: #ToDoDatabase
     instanceVariableNames: ''
     classVariableNames: ''
     package: 'ToDo-Glorp'
@@ -163,7 +163,7 @@ Object subclass: #TodoDatabase
 Then on class side we add the code needed to log into the database:
 
 [[[
-TodoDatabase class >> login
+ToDoDatabase class >> login
   ^ Login new
       database: MySQLPlatform new;
       username: 'root';
@@ -178,8 +178,8 @@ TodoDatabase class >> login
 And a method to create a new session:
 
 [[[
-TodoDatabase class >> session
-  ^ TodoDescriptorSystem sessionForLogin: self login
+ToDoDatabase class >> session
+  ^ ToDoDescriptorSystem sessionForLogin: self login
 ]]]
 
 
@@ -189,7 +189,7 @@ Now some magic. As you have described the database schema with GLORP,
 you can tell it to create the tables. In a playground evaluate:
 
 [[[
-TodoDatabase session
+ToDoDatabase session
  login;
  createTables.
 ]]]
@@ -215,19 +215,19 @@ Create Table: CREATE TABLE `ITEMS` (
 !!! Manipulating objects
 
 
-Let's go further. We can create some ==TodoItem== in a MySQL
+Let's go further. We can create some ==ToDoItem== in a MySQL
 transaction:
 
 [[[
-session := TodoDatabase session.
+session := ToDoDatabase session.
 session login.
 session inUnitOfWorkDo: [
   session
-    register: (TodoItem new
+    register: (ToDoItem new
                  title: 'add GLORP persistence';
                  description: 'we need to describe mappings';
                  completed: true);
-    register: (TodoItem new
+    register: (ToDoItem new
                  title: 'Glue persistence and QCMagritte';
                  completed: false)
 ]
