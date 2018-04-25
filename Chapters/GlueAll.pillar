@@ -87,3 +87,72 @@ ToDoListModel >> todoItems
 Now refresh your browser on *http://localhost:8080/ToDo*. It should look like capture  *@GlorpTodo*.
 
 +ToDo application>file://figures/glorp_todo.png|width=70|label=GlorpTodo+
+
+
+!!! Adding and removing ToDo items
+
+When you add or remove ToDo items from the web interface, Magritte will pass the entire collection to ==ToDoListModel >> todoItems:==. So we have to check whether we need to add or delete objects from GLORP each time the message is received. Change the method as follows:
+
+[[[
+ToDoListModel >> todoItems: aCollection
+  self session database inUnitOfWorkDo: [:session| |itemsInDb|
+    itemsInDb := self todoItems.
+    
+    itemsInDb do: [:each | 
+	  (aCollection includes: each) ifFalse: [session delete: each].
+    ].
+
+    aCollection do: [ :each | 
+      (itemsInDb includes: each) ifFalse: [session register: each ] 
+	]
+  ].
+]]]
+
+Know you should be able to add and delete ToDo items. However, updating an existing one won't work.
+
+
+!!! Updating ToDo items
+
+When you update a model through a form in the web interface, Magritte cache the values being read and written. On the post operation, it will update the model directly without sending any message to ==ToDoListModel==. This caching is done by ==MACachedMemento==.
+
+Fortunaly, QCMagritte's ==QCObject== allows us to use other memento objects quite easily. What we need to do is:
+#Create a memento class that propagate a model changes in GLORP
+#Tells ==ToDoItem== to use this memento
+
+Create a new memento class ==ToDoMemento== by subclassing QCMagritte's ==QCAjaxMemento==:
+
+[[[
+QCAjaxMemento subclass: #ToDoMemento
+	instanceVariableNames: ''
+	classVariableNames: ''
+	package: 'ToDo-Web'
+]]]
+
+
+This memento will need to access the GLORP session. We can do this by accessing the dynamic variable ==WACurrentRequestContext== that holds the seaside session object, that will be an instance of ==ToDoSession== in our project:
+
+[[[
+ToDoMemento >> database
+  ^ WACurrentRequestContext value session database
+]]]
+
+Then override the method ==push:== that is executed when Magritte commit changes:
+
+[[[
+ToDoMemento >> push: aDictionary
+  self database inUnitOfWorkDo: [:session | 
+    session register: self model.
+	super push: aDictionary.
+  ].
+]]]
+
+
+The last part, tell ==ToDoItem== to use the memento class ==ToDoMemento== by overriding the method ==mementoClass==:
+
+[[[
+ToDoItem >> mementoClass
+  ^ ToDoMemento
+]]]
+
+
+Now updating should work flawlessly !
