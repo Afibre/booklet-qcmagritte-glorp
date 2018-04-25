@@ -198,22 +198,24 @@ TodoDatabase session
 In MariaDB / MySQL:
 
 [[[
-desc ITEMS;
-+------------+-------------+------+-----+---------+----------------+
-|Field       | Type        | Null | Key | Default | Extra          |
-+------------+-------------+------+-----+---------+----------------+
-|id          | int(11)     | NO   | PRI | NULL    | auto_increment |
-|title       | varchar(250)| YES  |     | NULL    |                |
-|description | longtext    | YES  |     | NULL    |                |
-|completed   | smallint(6) | YES  |     | NULL    |                |
-+------------+-------------+------+-----+---------+----------------+
+> show create table ITEMS\G
+*********************** 1. row ***********************
+       Table: ITEMS
+Create Table: CREATE TABLE `ITEMS` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) DEFAULT NULL,
+  `description` longtext,
+  `completed` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4
 ]]]
 
 
 !!! Manipulating objects
 
 
-Let's go further. We can create a new ==TodoItem== in a MySQL
+Let's go further. We can create some ==TodoItem== in a MySQL
 transaction:
 
 [[[
@@ -229,4 +231,21 @@ session inUnitOfWorkDo: [
                  title: 'Glue persistence and QCMagritte';
                  completed: false)
 ]
+]]]
+
+
+See the result in MySQL:
+
+[[[
+> select * from ITEMS\G
+*********************** 1. row ***********************
+         id: 1
+      title: add GLORP persistence
+description: we need to describe mappings
+  completed: 1
+*********************** 2. row ***********************
+         id: 2
+      title: Glue persistence and QCMagritte
+description: NULL
+  completed: 0
 ]]]

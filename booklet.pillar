@@ -14,6 +14,7 @@ This booklet try to bring insight into aggregating dynamic tools that helps deal
 
 ${inputFile:Chapters/GettingStarted.pillar}$
 ${inputFile:Chapters/Persistence.pillar}$
+${inputFile:Chapters/GlueAll.pillar}$
 ${inputFile:Chapters/IntroducingGoombas.pillar}$
 
 
