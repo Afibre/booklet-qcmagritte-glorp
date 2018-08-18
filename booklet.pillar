@@ -1,19 +1,18 @@
-We want to write web applications. We need to test with a prototype. Often this prototype evolve into application in production. Iteratively, while adopting new testers then new users,  we discover new usages, new needs, new ideas. And we need to refactor.
+The goal of this project is to support web application development. We need to test with a prototype. Often this prototype evolves into application in production. Iteratively, while adopting new testers then new users,  we discover new usages, new needs, new ideas. And we need to refactor.
 
-This refactoring process imply often an evolution of domain models, objects and their interactions. Developpers have to adapt the user interface to these interactions. The complexity of developping responsive web user interfaces using HTML templating or canvas may be a slowdown for these early phases.
+This refactoring process often implies the evolution of domain models, objects and their interactions. Developpers have to adapt the user interface to these interactions. The complexity of developping responsive web user interfaces using HTML templating or canvas may be a slowdown for these early phases.
 
 In enterprise we may also face constraints like using relationnal databases to integrate existing architectures.
 
-This booklet try to bring insight into aggregating dynamic tools that helps dealing with these problems:
+This booklet  brings insight into aggregating dynamic tools that help dealing with these problems:
 - Pharo${cite:PHAR16}$ is a live development environment that provides immediate feedback.
 - Seaside${cite:SEAS18}$ is an open source framework for developing dynamic web applications.
 - Magritte${cite:RENG06}$ is a dynamic meta-description framework that enables generation of dynamic user interfaces.
 - QCMagritte${cite:QCMAGR}$ provides reusable components for developping responsive web applications based on Seaside and Magritte.
-- GLORP${cite:GLORP17}$ allows to persist objects into relational databases like MySQL
-
+- GLORP${cite:GLORP17}$ allows one to persist objects into relational databases like MySQL
 
 ${inputFile:Chapters/GettingStarted.pillar}$
-${inputFile:Chapters/Persistence.pillar}$
+%${inputFile:Chapters/Persistence.pillar}$
 ${inputFile:Chapters/IntroducingGoombas.pillar}$
 
 

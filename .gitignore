@@ -5,3 +5,5 @@ Pharo*
 mustache
 pillar
 pharo
+*.DS_Store
+*.DS_store

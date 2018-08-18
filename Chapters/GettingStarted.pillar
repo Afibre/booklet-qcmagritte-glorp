@@ -1,4 +1,3 @@
-!!Getting started
 
 !!! Installation
 
@@ -13,9 +12,9 @@ Metacello new
   load.
 ]]]
 
+Note that pre-built 64 bits images are available at *https://github.com/Afibre/QCMagritte/releases*.
 
-Note that pre-built 64 bits images are available
-at *https://github.com/Afibre/QCMagritte/releases*.
+!!! Starting the web server
 
 Start the Zinc web server on port ==8080==:
 
@@ -24,7 +23,7 @@ ZnZincServerAdaptor startOn: 8080
 ]]]
 
 Then point your browser to *http://localhost:8080/*. It should display the
-QCMagritte tutorial as in picture *@QCMagritteTutorial*
+QCMagritte tutorial as in Figure *@QCMagritteTutorial*
 
 +The QCMagritte tutorial>file://figures/qcmagritte_tutorial.png|width=70|label=QCMagritteTutorial+
 
@@ -34,13 +33,14 @@ QCMagritte tutorial as in picture *@QCMagritteTutorial*
 We provide a summary of the QCMagritte tutorial below. We will focus here on the
 minimum to go to the next chapter.
 
+
 The creation of a QCMagritte application requires to subclass ==QCBootstrapApplication==:
 
 [[[
 QCBootstrapApplication subclass: #ToDoApplication
   instanceVariableNames: ''
   classVariableNames: ''
-  category: 'ToDo-Web'
+  package: 'ToDo-Web'
 ]]]
 
 
@@ -54,15 +54,14 @@ QCBootstrapApplication requires to define ==#title== that answers the title of
 the application:
 
 [[[
-ToDoApplication>>title
+ToDoApplication >> title
   ^ 'What to do ?'
 ]]]
 
 +ToDo application>file://figures/qcmagritte_todo.png|width=70|label=ToDoApplication+
 
 Now the page at *http://localhost:8080/ToDo* should display the ToDo application
-as shown in screenshot *@ToDoApplication*.
-
+as shown in Figure *@ToDoApplication*.
 
 
 !!! Model definition
@@ -71,65 +70,81 @@ QCMagritte applications are model driven. That means we will put some effort in
 describing models handled by the application. Then we expect QCMagritte to
 generate a nice web interface to administrate these models.
 
-In a QCBootstrapApplication subclass we have to declare the entry point, the model
+In a QCBootstrapApplication subclass, we have to declare the entry point, the model
 that acts as the root of all objects, datas that will be manipulated through the
-web interface. Here the model will be an instance of a
-==QCBootstrapApplicationModel== subclass:
+web interface. 
+
+Here the model will be an instance of a ==QCBootstrapApplicationModel== subclass:
 
 [[[
 QCBootstrapApplicationModel subclass: #TodoListModel
   instanceVariableNames: ''
   classVariableNames: ''
-  category: 'ToDo-Model'
+  package: 'ToDo-Model'
 ]]]
 
 Then we link this model to our application by overriding
 ==ToDoApplication>>model==:
 
 [[[
-ToDoApplication>>model
-  ^TodoListModel default
+ToDoApplication >> model
+  ^ TodoListModel default
 ]]]
 
 
 !!!! ToDo items
 
-For ToDoApplication, we need some ==ToDo items== that have a ==title==, a ==description==
+For the ToDoApplication, we need some ==ToDo== items that have a ==title==, a ==description==
 and a ==completion== status. Let's declare this class as a subclass of ==QCObject==:
 
 [[[
 QCObject subclass: #TodoItem
   instanceVariableNames: 'title description completed'
   classVariableNames:''
-  category:'ToDo-Model'
+  package:'ToDo-Model'
+]]]
 
-TodoItem>>title
+[[[
+TodoItem >> title
 	^title
+]]]
 
-TodoItem>>description
+[[[
+TodoItem >> description
 	^description
+]]]
 
-TodoItem>>completed
+[[[
+TodoItem >> completed
 	^completed ifNil: [ false ]
-  
-TodoItem>>title: aString
+]]]
+
+[[[
+TodoItem >> title: aString
 	title := aString
+]]]
 
-TodoItem>>description: aString
+[[[
+TodoItem >> description: aString
 	^description := aString
+]]]
 
-TodoItem>>completed: aBoolean
+[[[
+TodoItem >> completed: aBoolean
 	completed := aBoolean
 ]]]
 
 
-Now we can describe properly or ToDo items variables using Magritte. First,
-==title== is a required string:
+!!! Describing items with Magritte
+
+Now we describe properly our ToDo item variables using Magritte. 
+
+First, ==title== is a required string:
 
 [[[
-TodoItem>>descriptionTitle
+TodoItem >> descriptionTitle
   <magritteDescription>
-  ^MAStringDescription new
+  ^ MAStringDescription new
       accessor: #title;
       label: 'Title';
       priority: 100;
@@ -141,9 +156,9 @@ TodoItem>>descriptionTitle
 Then comes ==description== as a long string:
 
 [[[
-TodoItem>>descriptionDescription
+TodoItem >> descriptionDescription
 	<magritteDescription>
-	^MAMemoDescription new
+	^ MAMemoDescription new
       accessor: #description;
       label: 'Description';
       priority: 200;
@@ -153,9 +168,9 @@ TodoItem>>descriptionDescription
 Finally there's the completion status as a boolean:
 
 [[[
-TodoItem>>descriptionCompleted
+TodoItem >> descriptionCompleted
   <magritteDescription>
-  ^MABooleanDescription new
+  ^ MABooleanDescription new
       accessor: #completed;
       label: 'Completed';
       priority: 300;
@@ -163,7 +178,7 @@ TodoItem>>descriptionCompleted
 ]]]
 
 
-!!!! Putting all together
+!!! Putting all together
 
 Finally, we need a way to store created Todo items. We will talk about Glorp
 persistence in the next chapter. For now, let's use an
@@ -174,13 +189,16 @@ as follow:
 QCBootstrapApplicationModel subclass: #TodoListModel
   instanceVariableNames: 'todoItems'
   classVariableNames: ''
-  category: 'Tutorial-Model'
+  package: 'Tutorial-Model'
+]]]
 
-
-TodoListModel>>todoItems
+[[[
+TodoListModel >> todoItems
   ^todoItems ifNil: [ todoItems := OrderedCollection new ]
+]]]
 
-TodoListModel>>todoItems: aCollection
+[[[
+TodoListModel >> todoItems: aCollection
   todoItems := aCollection
 ]]]
 
@@ -188,7 +206,7 @@ Then describe this variable using Magritte description
 ==MAToMaManyRelationDescription==:
 
 [[[
-TodoListModel>>descriptionTodoItems
+TodoListModel >> descriptionTodoItems
   <magritteDescription>
   ^MAToManyRelationDescription new
     label: 'Todo';
@@ -199,6 +217,6 @@ TodoListModel>>descriptionTodoItems
 ]]]
 
 Go back to your web browser, you should be able to create / update / delete some
-items (see *@ToDoWithModel*)
+items (see Figure *@ToDoWithModel*)
 
 +ToDo application front page>file://figures/qcmagritte_todo_with_model.png|width=70|label=ToDoWithModel+
